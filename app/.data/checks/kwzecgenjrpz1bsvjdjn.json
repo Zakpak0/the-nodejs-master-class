@@ -1,1 +1,5 @@
+<<<<<<< Updated upstream
 {"id":"kwzecgenjrpz1bsvjdjn","userPhone":"8082142157","protocol":"https","url":"yahoo.com","method":"get","successCodes":[200,201,301,302],"timeoutSeconds":3,"state":"up","lastChecked":1635370271889}
+=======
+{"id":"kwzecgenjrpz1bsvjdjn","userPhone":"8082142157","protocol":"https","url":"yahoo.com","method":"get","successCodes":[200,201,301,302],"timeoutSeconds":3,"state":"up","lastChecked":1635010505111}
+>>>>>>> Stashed changes
