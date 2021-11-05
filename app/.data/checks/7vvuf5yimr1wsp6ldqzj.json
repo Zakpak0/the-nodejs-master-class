@@ -1,5 +1,0 @@
-<<<<<<< Updated upstream
-{"id":"7vvuf5yimr1wsp6ldqzj","userPhone":"8082142157","protocol":"http","url":"twitter.com","method":"put","successCodes":[200,201,301,302,400],"timeoutSeconds":2,"state":"up","lastChecked":1635370271747}
-=======
-{"id":"7vvuf5yimr1wsp6ldqzj","userPhone":"8082142157","protocol":"http","url":"twitter.com","method":"put","successCodes":[200,201,301,302,400],"timeoutSeconds":2,"state":"up","lastChecked":1635010504993}
->>>>>>> Stashed changes
