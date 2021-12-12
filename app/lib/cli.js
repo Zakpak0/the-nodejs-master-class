@@ -9,13 +9,13 @@ const readline = require("readline");
 const util = require("util");
 const debug = util.debuglog("cli");
 const events = require("events");
-class _events extends events {}
+class _events extends events { }
 const e = new _events();
 const os = require("os");
 const v8 = require("v8");
 const _data = require("./data");
-const { stderr } = require("process");
-const { stat } = require("fs");
+const _logs = require("./logs");
+const helpers = require("./helpers")
 
 // Instantiate the CLI module object
 let cli = {};
@@ -78,7 +78,7 @@ cli.responders.help = function () {
       'Show a list of all the active checks in the system, including their state. The "--up" and the "--down" flags are both optional',
     "more check info --{checkId}": "Show details of a specified check",
     "list logs":
-      "Show a list of all the log files available to bee read (compressed and uncompressed)",
+      "Show a list of all the log files available to bee read (compressed only)",
     "more log info --{fileName}": "Show details of a specificed log file",
   };
 
@@ -161,12 +161,12 @@ cli.responders.stats = function () {
     "Allocated Heap Used (%)": Math.round(
       (v8.getHeapStatistics().used_heap_size /
         v8.getHeapStatistics().total_heap_size) *
-        100
+      100
     ),
     "Available Heap Allocated (%)": Math.round(
       (v8.getHeapStatistics().total_heap_size /
         v8.getHeapStatistics().heap_size_limit) *
-        100
+      100
     ),
     Uptime: os.uptime() + " Seconds",
   };
@@ -209,8 +209,8 @@ cli.responders.listUsers = function () {
             let line = `Name: ${userData.firstName} ${userData.lastName} Phone: ${userData.phone}`;
             let numberOfChecks =
               typeof userData.checks == "object" &&
-              userData.checks instanceof Array &&
-              userData.checks.length > 0
+                userData.checks instanceof Array &&
+                userData.checks.length > 0
                 ? userData.checks.length
                 : 0;
             line += numberOfChecks;
@@ -267,9 +267,8 @@ cli.responders.listChecks = function (str) {
             (lowerString.indexOf("--down") < 0 &&
               lowerString.indexOf("--up") < 0)
           ) {
-            let line = `ID: ${checkData.id} ${checkData.method.toUpperCase()} ${
-              checkData.protocol
-            }://${checkData.url} State: ${stateOrUnknown}`;
+            let line = `ID: ${checkData.id} ${checkData.method.toUpperCase()} ${checkData.protocol
+              }://${checkData.url} State: ${stateOrUnknown}`;
             console.log(line);
             cli.verticalSpace();
           }
@@ -281,17 +280,65 @@ cli.responders.listChecks = function (str) {
 
 // More check info
 cli.responders.moreCheckInfo = function (str) {
-  console.log("You asked for more check info", str);
+  //  Get the ID from the string
+  let arr = str.split("--");
+  let checkId =
+    typeof arr[1] == "string" && arr[1].trim().length > 0
+      ? arr[1].trim()
+      : false;
+  if (checkId) {
+    // Lookup the user
+    _data.read("checks", checkId, function (err, checkData) {
+      if (!err && checkData) {
+        // Print the JSON with text highlighting
+        cli.verticalSpace();
+        console.dir(checkData, { colors: true });
+        cli.verticalSpace();
+      }
+    });
+  }
 };
 
 // List Logs
 cli.responders.listLogs = function () {
-  console.log("You asked to list logs");
+  _logs.list(true, function (err, logFileNames) {
+    if (!err && logFileNames && logFileNames.length > 0) {
+      cli.verticalSpace();
+      logFileNames.forEach(function (logFileName) {
+        if (logFileName.indexOf('-') > -1) {
+          console.log(logFileName);
+          cli.verticalSpace();
+        }
+      })
+    }
+  })
 };
 
 // More logs info
 cli.responders.moreLogInfo = function (str) {
-  console.log("You asked for more log info", str);
+  //  Get the logFileName from the string
+  let arr = str.split("--");
+  let logFileName =
+    typeof arr[1] == "string" && arr[1].trim().length > 0
+      ? arr[1].trim()
+      : false;
+  if (logFileName) {
+    cli.verticalSpace();
+    // Decopress the log file
+    _logs.decompress(logFileName, function (err, strData) {
+      if (!err && strData) {
+        // Split into lines
+        let arr = strData.split('\n');
+        arr.forEach(function (jsonString) {
+          let logObject = helpers.parseJsonToObject(jsonString);
+          if (logObject && JSON.stringify(logObject) !== '{}') {
+            console.log(logObject, { 'colors': true });
+            cli.verticalSpace()
+          }
+        })
+      }
+    })
+  }
 };
 
 // Input processor

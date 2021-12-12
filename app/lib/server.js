@@ -165,12 +165,13 @@ server.router = {
   "checks/all": handlers.checksList,
   "checks/create": handlers.checksCreate,
   "checks/edit": handlers.checksEdit,
-  ping: handlers.ping,
+  'ping': handlers.ping,
   "api/users": handlers.users,
   "api/tokens": handlers.tokens,
   "api/checks": handlers.checks,
   "favicon.ico": handlers.favicon,
-  public: handlers.public,
+  'public': handlers.public,
+  'examples/error': handlers.examples,
 };
 
 //Init script
