@@ -366,6 +366,12 @@ handlers.public = function (data, callback) {
  * JSON API Handlers
  */
 
+// Example error
+handlers.exampleError = function (data, callback) {
+  let err = new Error('This is an example error');
+  throw (err);
+}
+
 //Users
 handlers.users = function (data, callback) {
   const acceptableMethods = ["post", "get", "put", "delete"];
@@ -386,27 +392,27 @@ handlers._users.post = function (data, callback) {
   // Check that all required fields are filled out
   let firstName =
     typeof data.payload.firstName === "string" &&
-    data.payload.firstName.trim().length > 0
+      data.payload.firstName.trim().length > 0
       ? data.payload.firstName.trim()
       : false;
   let lastName =
     typeof data.payload.lastName === "string" &&
-    data.payload.lastName.trim().length > 0
+      data.payload.lastName.trim().length > 0
       ? data.payload.lastName.trim()
       : false;
   let phone =
     typeof data.payload.phone === "string" &&
-    data.payload.phone.trim().length === 10
+      data.payload.phone.trim().length === 10
       ? data.payload.phone.trim()
       : false;
   let password =
     typeof data.payload.password === "string" &&
-    data.payload.password.trim().length > 0
+      data.payload.password.trim().length > 0
       ? data.payload.password.trim()
       : false;
   let tosAgreement =
     typeof data.payload.tosAgreement === "boolean" &&
-    data.payload.tosAgreement === true
+      data.payload.tosAgreement === true
       ? true
       : false;
   if (firstName && lastName && phone && password && tosAgreement) {
@@ -455,7 +461,7 @@ handlers._users.get = function (data, callback) {
   //Check that the phone number is valid
   let phone =
     typeof data.queryStringObject.phone === "string" &&
-    data.queryStringObject.phone.trim().length === 10
+      data.queryStringObject.phone.trim().length === 10
       ? data.queryStringObject.phone.trim()
       : false;
   if (phone) {
@@ -494,24 +500,24 @@ handlers._users.put = function (data, callback) {
   // Check for the required field
   let phone =
     typeof data.payload.phone === "string" &&
-    data.payload.phone.trim().length === 10
+      data.payload.phone.trim().length === 10
       ? data.payload.phone.trim()
       : false;
 
   // Check for optional fields
   let firstName =
     typeof data.payload.firstName === "string" &&
-    data.payload.firstName.trim().length > 0
+      data.payload.firstName.trim().length > 0
       ? data.payload.firstName.trim()
       : false;
   let lastName =
     typeof data.payload.lastName === "string" &&
-    data.payload.lastName.trim().length > 0
+      data.payload.lastName.trim().length > 0
       ? data.payload.lastName.trim()
       : false;
   let password =
     typeof data.payload.password === "string" &&
-    data.payload.password.trim().length > 0
+      data.payload.password.trim().length > 0
       ? data.payload.password.trim()
       : false;
   //Error if the phone is invalid
@@ -571,7 +577,7 @@ handlers._users.delete = function (data, callback) {
   //Check that the phone number is valid
   let phone =
     typeof data.queryStringObject.phone === "string" &&
-    data.queryStringObject.phone.trim().length === 10
+      data.queryStringObject.phone.trim().length === 10
       ? data.queryStringObject.phone.trim()
       : false;
   if (phone) {
@@ -590,7 +596,7 @@ handlers._users.delete = function (data, callback) {
                 //Delete each of the checks associated with the user
                 let userChecks =
                   typeof userData.checks === "object" &&
-                  userData.checks instanceof Array
+                    userData.checks instanceof Array
                     ? userData.checks
                     : [];
                 checksToDelete = userChecks.length;
@@ -659,12 +665,12 @@ handlers._tokens = {};
 handlers._tokens.post = function (data, callback) {
   let phone =
     typeof data.payload.phone === "string" &&
-    data.payload.phone.trim().length === 10
+      data.payload.phone.trim().length === 10
       ? data.payload.phone.trim()
       : false;
   let password =
     typeof data.payload.password === "string" &&
-    data.payload.password.trim().length > 0
+      data.payload.password.trim().length > 0
       ? data.payload.password.trim()
       : false;
   if (phone && password) {
@@ -719,7 +725,7 @@ handlers._tokens.get = function (data, callback) {
   //Check that the id number is valid
   let id =
     typeof data.queryStringObject.id === "string" &&
-    data.queryStringObject.id.trim().length === 20
+      data.queryStringObject.id.trim().length === 20
       ? data.queryStringObject.id.trim()
       : false;
   if (id) {
@@ -791,7 +797,7 @@ handlers._tokens.delete = function (data, callback) {
   // Check that the id is valid
   let id =
     typeof data.queryStringObject.id === "string" &&
-    data.queryStringObject.id.trim().length === 20
+      data.queryStringObject.id.trim().length === 20
       ? data.queryStringObject.id.trim()
       : false;
   if (id) {
@@ -851,7 +857,7 @@ handlers._checks.post = function (data, callback) {
   //Validate input
   let protocol =
     typeof data.payload.protocol === "string" &&
-    ["https", "http"].indexOf(data.payload.protocol) > -1
+      ["https", "http"].indexOf(data.payload.protocol) > -1
       ? data.payload.protocol
       : false;
 
@@ -862,21 +868,21 @@ handlers._checks.post = function (data, callback) {
 
   let method =
     typeof data.payload.method === "string" &&
-    ["post", "get", "put", "delete"].indexOf(data.payload.method) > -1
+      ["post", "get", "put", "delete"].indexOf(data.payload.method) > -1
       ? data.payload.method
       : false;
 
   let successCodes =
     typeof data.payload.successCodes === "object" &&
-    data.payload.successCodes instanceof Array &&
-    data.payload.successCodes.length > 0
+      data.payload.successCodes instanceof Array &&
+      data.payload.successCodes.length > 0
       ? data.payload.successCodes
       : false;
   let timeoutSeconds =
     typeof data.payload.timeoutSeconds === "number" &&
-    data.payload.timeoutSeconds % 1 === 0 &&
-    data.payload.timeoutSeconds >= 1 &&
-    data.payload.timeoutSeconds <= 5
+      data.payload.timeoutSeconds % 1 === 0 &&
+      data.payload.timeoutSeconds >= 1 &&
+      data.payload.timeoutSeconds <= 5
       ? data.payload.timeoutSeconds
       : false;
 
@@ -895,7 +901,7 @@ handlers._checks.post = function (data, callback) {
           if (!err && userData) {
             let userChecks =
               typeof userData.checks === "object" &&
-              userData.checks instanceof Array
+                userData.checks instanceof Array
                 ? userData.checks
                 : [];
             //Very that the user has less than the number of max-checks-per-user
@@ -962,7 +968,7 @@ handlers._checks.get = function (data, callback) {
   //Check that the phone number is valid
   let id =
     typeof data.queryStringObject.id === "string" &&
-    data.queryStringObject.id.trim().length === 20
+      data.queryStringObject.id.trim().length === 20
       ? data.queryStringObject.id.trim()
       : false;
   if (id) {
@@ -1007,7 +1013,7 @@ handlers._checks.put = function (data, callback) {
   // Check for optional fields
   let protocol =
     typeof data.payload.protocol === "string" &&
-    ["https", "http"].indexOf(data.payload.protocol) > -1
+      ["https", "http"].indexOf(data.payload.protocol) > -1
       ? data.payload.protocol
       : false;
 
@@ -1018,22 +1024,22 @@ handlers._checks.put = function (data, callback) {
 
   let method =
     typeof data.payload.method === "string" &&
-    ["post", "get", "put", "delete"].indexOf(data.payload.method) > -1
+      ["post", "get", "put", "delete"].indexOf(data.payload.method) > -1
       ? data.payload.method
       : false;
 
   let successCodes =
     typeof data.payload.successCodes === "object" &&
-    data.payload.successCodes instanceof Array &&
-    data.payload.successCodes.length > 0
+      data.payload.successCodes instanceof Array &&
+      data.payload.successCodes.length > 0
       ? data.payload.successCodes
       : false;
 
   let timeoutSeconds =
     typeof data.payload.timeoutSeconds === "number" &&
-    data.payload.timeoutSeconds % 1 === 0 &&
-    data.payload.timeoutSeconds >= 1 &&
-    data.payload.timeoutSeconds <= 5
+      data.payload.timeoutSeconds % 1 === 0 &&
+      data.payload.timeoutSeconds >= 1 &&
+      data.payload.timeoutSeconds <= 5
       ? data.payload.timeoutSeconds
       : false;
   //Check to make sure id is valid
@@ -1101,7 +1107,7 @@ handlers._checks.delete = function (data, callback) {
   //Check that the id number is valid
   let id =
     typeof data.queryStringObject.id === "string" &&
-    data.queryStringObject.id.trim().length === 20
+      data.queryStringObject.id.trim().length === 20
       ? data.queryStringObject.id.trim()
       : false;
   if (id) {
@@ -1129,7 +1135,7 @@ handlers._checks.delete = function (data, callback) {
                       if (!err && data) {
                         let userChecks =
                           typeof userData.checks === "object" &&
-                          userData.checks instanceof Array
+                            userData.checks instanceof Array
                             ? userData.checks
                             : [];
                         //Removed the delete check from their list of checks
