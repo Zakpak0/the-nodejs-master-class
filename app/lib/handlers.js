@@ -8,6 +8,11 @@
 const _data = require("./data");
 const helpers = require("./helpers");
 const config = require("./config");
+const _url = require('url')
+const dns = require('dns')
+const _performance = require('perf_hooks').performance
+const util = require('util');
+const debug = util.debuglog('performance')
 
 //Define the handlers
 let handlers = {};
@@ -906,43 +911,54 @@ handlers._checks.post = function (data, callback) {
                 : [];
             //Very that the user has less than the number of max-checks-per-user
             if (userChecks.length < config.maxChecks) {
-              //Create a random id for a check
-              const checkId = helpers.createRandomString(20);
 
-              //Create the check object, and include the user's phone
-              let checkObject = {
-                id: checkId,
-                userPhone: userPhone,
-                protocol: protocol,
-                url: url,
-                method: method,
-                successCodes: successCodes,
-                timeoutSeconds: timeoutSeconds,
-              };
+              // Verify that the url given has DNS entries (and therefore can resolve)
+              let parsedUrl = _url.parse(protocol + '://' + url, true)
+              let hostName = typeof (parsedUrl.hostname) == 'string' && parsedUrl.hostname.length > 0 ? parsedUrl.hostname : false
+              dns.resolve(hostName, function (err, records) {
+                if (!err && records) {
 
-              //Save the object
-              _data.create("checks", checkId, checkObject, function (err) {
-                if (!err) {
-                  //Add the check id to the user's object
-                  userData.checks = userChecks;
+                  //Create a random id for a check
+                  const checkId = helpers.createRandomString(20);
 
-                  userData.checks.push(checkId);
+                  //Create the check object, and include the user's phone
+                  let checkObject = {
+                    id: checkId,
+                    userPhone: userPhone,
+                    protocol: protocol,
+                    url: url,
+                    method: method,
+                    successCodes: successCodes,
+                    timeoutSeconds: timeoutSeconds,
+                  };
 
-                  //Save the new user data
-                  _data.update("users", userPhone, userData, function (err) {
+                  //Save the object
+                  _data.create("checks", checkId, checkObject, function (err) {
                     if (!err) {
-                      //Return the data about the new check
-                      callback(200, checkObject);
-                    } else {
-                      callback(500, {
-                        Error: "Could not update the user with the new check",
+                      //Add the check id to the user's object
+                      userData.checks = userChecks;
+
+                      userData.checks.push(checkId);
+
+                      //Save the new user data
+                      _data.update("users", userPhone, userData, function (err) {
+                        if (!err) {
+                          //Return the data about the new check
+                          callback(200, checkObject);
+                        } else {
+                          callback(500, {
+                            Error: "Could not update the user with the new check",
+                          });
+                        }
                       });
+                    } else {
+                      callback(500, { Error: "Could not create new check" });
                     }
                   });
                 } else {
-                  callback(500, { Error: "Could not create new check" });
+                  callback(400, { 'Error': 'The hostname of the URL entered did not resolve to any DNS entries' })
                 }
-              });
+              })
             } else {
               callback(400, {
                 Error: `The user already has the maximum number of checks (${config.maxChecks})`,

@@ -27,9 +27,7 @@ app.init = function (callback) {
 
 //Self invoking only if required difrectly
 if (require.main == module) {
-  app.init(function () {
-    console.log("init")
-  });
+  app.init(function () { });
 }
 //Export the app
 module.exports = app;
